@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<title>Page multilingue</title>
+<style>
+[lang] {
+display: none;
+}
+[lang=en] {
+display: block;
+}
+</style>
+<script text="text/javascript">
+function localize (language) {
+let lang = ':lang(' + language + ')';
+let hide = '[lang]:not(' + lang + ')';
+document.querySelectorAll(hide).forEach(function (node) {
+node.style.display = 'none';
+});
+let show = '[lang]' + lang;
+document.querySelectorAll(show).forEach(function (node) {
+node.style.display = 'block';
+});
+}
+</script>
+<style>
+.falseResponse {
+  color: red;
+  background-color: grey;
+}
+.rightResponse {
+  color: green;
+  background-color: white;
+}
+</style>
+</head>
+<body>
+
+<span style="display: none;" lang="en">
+<h2>Question...</h2>
+<p><img src="https://vikazimut.lescigales.org/BayeuxDDAY/58/B7007_site.jpeg" width="100%"></p>
+<p> In order to facilitate the transport of the troops and the equipment disembarked from the artificial harbour at Arromanches and convey them as fast as possible to the front, a road skirting around Bayeux was built by the British army’s engineering department. The By-pass was operational on 24th June 1944.</p>
+<p><img src="https://vikazimut.lescigales.org/BayeuxDDAY/58/B5685_site.jpeg" width="100%"></p>
+<p style="text-align:center"><audio controls="controls" src="https://vikazimut.lescigales.org/BayeuxDDAY/58/58ang.mp3"></audio></p>
+</span>
+<span style="display: block;" lang="fr">
+
+
+    <!-- Un exemple de QCM avec deux réponses -->
+    
+    <h2 id="question"></h2>
+    <div>
+    <ol type=A>
+    <li>
+        <input type="radio" id="answer1" value="0" onchange="sendChoice(0, 'Faux, la bonne réponse est Ruat');">
+        <label id="label1" for="answer1"></label>
+    </li>
+    <li>
+        <input type="radio" id="answer2" value="1" onchange="sendChoice(0, 'Faux, la bonne réponse est Ruat');">
+        <label id="label2" for="answer2"></label>
+    </li>
+    <li>
+        <input type="radio" id="answer3" value="1" onchange="sendChoice(1, 'Bravo');">
+        <label id="label3" for="answer3"></label>
+    </li>
+    </ol>
+    </div>
+
+    <div id="result-text" style="color: red"></div>
+<pre id="log">
+</span>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
+<!-- Ne pas modifier -->
+<script type="text/javascript">
+var language = window.navigator.userLanguage || window.navigator.language;
+localize(language.substring(0,2));
+
+const SUPABASE_URL = 'https://cvblneudxovqrmxyldca.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYwNzA3MjM3MSwiZXhwIjoxOTIyNjQ4MzcxfQ.9vVUmwLVDNxDV3Xs3Av5CsM3rlz5Z55Pg15c5jJ-UUo'
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+
+async function loadData() {
+    let params = (new URL(document.location)).searchParams;
+    let code_eso = params.get('code_eso');
+    console.log(code_eso);
+    const { data, error } = await _supabase
+            .from('quizz')
+            .select("*")
+            .eq('code_eso', "ltc")
+            .eq('code_balise', 31)
+
+    if(!error) {
+        console.log(data[0]);
+        document.getElementById("question").innerText = data[0].question;
+        document.getElementById("label1").innerText = data[0].proposition1;
+        document.getElementById("label2").innerText = data[0].proposition2;
+        document.getElementById("label3").innerText = data[0].proposition3;
+    }
+    else {
+        console.log("erreur");
+    }
+};
+loadData()
+
+function sendChoice(point, answer) {
+            // Désactiver les boutons pour empêcher plusieurs réponses
+            document.getElementById("answer1").disabled = true;
+            document.getElementById("answer2").disabled = true;
+            document.getElementById("answer3").disabled = true;
+
+            document.getElementById("result-text").innerText = answer;
+            // Cette ligne permet de passer le nombre de points à l'application
+            Vikazimut.postMessage(point);
+        };
+</script>
+</body></html>
